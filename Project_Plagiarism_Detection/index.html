@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Plagiarism Detection Web App</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script>
+        "use strict";
+
+        function submitForm(oFormElement) {
+            var xhr = new XMLHttpRequest();
+            xhr.onload = function() {
+                var response_data = JSON.parse(xhr.responseText);
+                var result = parseFloat(response_data.body);
+                //var result = parseFloat(xhr.responseText);
+                var resultElement = document.getElementById('result');
+                if (result == 0) {
+                    resultElement.className = 'bg-success';
+                    resultElement.innerHTML = 'The answer Text was not plagiarized!';
+                } else {
+                    resultElement.className = 'bg-danger';
+                    resultElement.innerHTML = 'The answer Text was plagiarized!';
+                }
+            }
+            xhr.open(oFormElement.method, oFormElement.action, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+
+            var source_text = document.getElementById('source_text');
+            var submitted_text = document.getElementById('answer_text');
+            xhr.send(JSON.stringify({
+                "source_text": source_text.value,
+                "submitted_text": submitted_text.value
+            }));
+            return false;
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Plagiarism Detection: is the submitted text plagiarized or not?</h1>
+        <p>Enter your source text and submitted long text (more than 12 words) below and click submit to find out...</p>
+        <form method="POST" action="https://018xgnv586.execute-api.eu-west-1.amazonaws.com/prod/plagiarism-detection" onsubmit="return submitForm(this);">
+            <!-- HERE IS WHERE YOU NEED TO ENTER THE API URL -->
+            <div class="form-group">
+                <label for="review">Source Text:</label>
+                <textarea class="form-control" rows="5" id="source_text">Please enter your source text here.</textarea>
+                <label for="review">Submitted Text:</label>
+                <textarea class="form-control" rows="5" id="answer_text">Please enter your submitted text here.</textarea>
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+        <h1 class="bg-success" id="result"></h1>
+    </div>
+</body>
+
+</html>
